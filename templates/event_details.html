@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ event.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+     <div class="header">
+        <div class="logo">
+            <a href="{{ url_for('home') }}">
+                <img src="vvs_logo.png" alt="VVS Logo">
+            </a>
+        </div>
+        <h1>Vasant Valley School</h1>
+        <div class="login">
+        </div>
+    </div>
+     <div class="navbar">
+        {% if participants %}
+            <a href="{{ url_for('participants', event_id=event.id) }}">Participants</a>
+        {% endif %}
+        {% if adjudicators %}
+            <a href="{{ url_for('adjudicators', event_id=event.id) }}">Adjudicators</a>
+        {% endif %}
+        {% if rounds %}
+            <div class="dropdown">
+                <button class="dropbtn">Rounds</button>
+                <div class="dropdown-content">
+                    {% for round in rounds %}
+                        {% if round.is_released %}
+                          <a href="{{ url_for('round_details', event_id = event.id, round_id=round.id) }}">{{ round.name }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        {% if individual_leaderboard %}
+            <a href="{{ url_for('individual_leaderboard', event_id=event.id) }}">Individual Leaderboard</a>
+        {% endif %}
+        {% if institutional_leaderboard %}
+            <a href="{{ url_for('institutional_leaderboard', event_id=event.id) }}">Institutional Leaderboard</a>
+        {% endif %}
+    </div>
+    <div class="body">
+        <h2>{{ event.name }}</h2>
+        <p>{{ event.description }}</p>
+        <br>
+        <h4>Rules:</h4>
+        <p>{{ event.rules }}</p>
+    </div>
+</body>
+</html>
