@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ event.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.motion-item').click(function() {
+                var motionText = $(this).data('motion');
+                var motionS = $(this).data('motion-s');
+                var infoSlide = $(this).data('info-slide');
+
+                $('.popup-content').html(
+                    '<p>' + motionText + '</p>' +
+                    '<p>(' + motionS + ')</p>' +
+                    '<p>' + infoSlide + '</p>'
+                );
+
+                $('.popup').fadeIn();
+            });
+
+            $('.popup-close').click(function() {
+                $('.popup').fadeOut();
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <a href="{{ url_for('home') }}">
+                <img src="vvs_logo.png" alt="VVS Logo">
+            </a>
+        </div>
+        <h1>Vasant Valley School</h1>
+        <div class="login">
+        </div>
+    </div>
+     <div class="navbar">
+        {% if participants %}
+            <a href="{{ url_for('participants', event_id=event.id) }}">Participants</a>
+        {% endif %}
+        {% if adjudicators %}
+            <a href="{{ url_for('adjudicators', event_id=event.id) }}">Adjudicators</a>
+        {% endif %}
+        {% if rounds and event.is_umbrella_event == False %}
+            <div class="dropdown">
+                <button class="dropbtn">Rounds</button>
+                <div class="dropdown-content">
+                    {% for round in rounds %}
+                        {% if round.is_released %}
+                          <a href="{{ url_for('round_details', event_id = event.id, round_id=round.id) }}">{{ round.name }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        {% if rounds and event.is_umbrella_event == True %}
+            <div class="dropdown">
+                <button class="dropbtn">Events</button>
+                <div class="dropdown-content">
+                    {% for round in rounds %}
+                        {% if round.is_released %}
+                          <a href="{{ url_for('round_details', event_id = event.id, round_id=round.id) }}">{{ round.name }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        {% if individual_leaderboard and individual_leaderboard[0].leaderboard_released == True %}
+            <a href="{{ url_for('individual_leaderboard', event_id=event.id) }}">Individual Leaderboard</a>
+        {% endif %}
+        {% if institutional_leaderboard and institutional_leaderboard[0].leaderboard_released == True %}
+            <a href="{{ url_for('institutional_leaderboard', event_id=event.id) }}">Institutional Leaderboard</a>
+        {% endif %}
+    </div>
+
+    <div>
+        <h2>{{ round.name }}</h2>
+        {% if round.description %}
+            <p>{{ round.description }}</p>
+            <br>
+        {% endif %}
+        {% if round.rules %}
+            <h4>Rules:</h4>
+            <p>{{ round.rules }}</p>
+        {% endif %}
+    </div>
+    <div>
+        {% if motions and motion[0].is_released %}
+            <h2>Motions for {{round.name}}</h2>
+            <ul class="motion-list">
+                {% for motion in motions %}
+                    <li class="motion-item"
+                        data-motion="{{ motion.motion }}"
+                        data-motion-s="{{ motion.motion_s }}"
+                        data-info-slide="{{ motion.info_slide }}">
+                        {{ motion.motion }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <br>
+    <br>
+    <div>
+        {% if draws %}
+            <h2>Draws for {{ round.name }}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        {% if draws and draws[0].role1 != None %}
+                            <th>{{ draws[0].role1 }}</th>
+                        {% else %}
+                            <th>Team 1</th>
+                        {% endif %}
+                        {% if draws and draws[0].role2 != None %}
+                            <th>{{ draws[0].role2 }}</th>
+                        {% else %}
+                            <th>Team 2</th>
+                        {% endif %}
+                        {% if drawmotions == True %}
+                            <th>Motions</th>
+                        {% endif %}
+                        <th>Adjudicators</th>
+                        <th>Venue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for draw in draws %}
+                        <tr>
+                            <td>{{ draw.team1 }}</td>
+                            <td>{{ draw.team2 }}</td>
+                            {% if drawmotions == True %}
+                                {% if draw.motion_s != None %}
+                                    <td>{{ draw.motion_s }}</td>
+                                {% else %}
+                                    <td>Not Released Yet</td>
+                                {% endif %}
+                            {% endif %}
+                            <td>{{ draw.adjudicators }}</td>
+                            <td>{{ draw.venue }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+    <div class="popup">
+        <div class="popup-content">
+        </div>
+        <button class="popup-close">Close</button>
+    </div>
+</body>
+</html>

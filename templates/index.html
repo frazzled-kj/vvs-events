@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VVS Events</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <a href="{{ url_for('home') }}">
+                <img src="vvs_logo.png" alt="VVS Logo" height="50">
+            </a>
+        </div>
+        <h1><a href="https://www.vasantvalley.org" target="_blank">Vasant Valley School</a></h1>
+        <div class="login">
+            {% if not logged_in %}
+                <a href="{{ url_for('logout') }}">Login</a>
+            {% else %}
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="body">
+        <h2>Ongoing Events:</h2>
+        {% for event in events %}
+            {% if event.is_ongoing %}
+                <a href="{{ url_for('event_details', event_id=event.id) }}"><button class="start-event-btn">{{ event.name }}</button></a>
+            {% endif %}
+        {% endfor %}
+    </div>
+</body>
+</html>
